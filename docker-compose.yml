@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: eyelash-booking-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: eyelash_user
+      POSTGRES_PASSWORD: eyelash_password
+      POSTGRES_DB: eyelash_booking
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U eyelash_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+
