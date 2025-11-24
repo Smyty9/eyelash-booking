@@ -1,9 +1,14 @@
-export default function Home() {
+import { getServices } from '@/lib/actions/services';
+import { Hero } from '@/components/shared/hero';
+import { ServicesList } from '@/components/shared/services-list';
+
+export default async function Home() {
+  const services = await getServices();
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <h1 className="text-4xl font-bold">Система записи на наращивание ресниц</h1>
-      <p className="mt-4 text-lg text-muted-foreground">Проект готов к разработке</p>
+    <main className="min-h-screen">
+      <Hero />
+      <ServicesList services={services} />
     </main>
   );
 }
-
