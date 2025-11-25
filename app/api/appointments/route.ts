@@ -296,7 +296,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Ошибка валидации', details: error.errors },
+        { error: 'Ошибка валидации', details: error.issues },
         { status: 400 }
       );
     }
