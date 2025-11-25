@@ -5,10 +5,7 @@ import { getOverlappingTimeBlocks } from '@/lib/utils/time-blocks';
 
 const querySchema = z.object({
   serviceId: z.string().uuid('Неверный ID услуги'),
-  date: z.coerce.date({
-    required_error: 'Дата обязательна',
-    invalid_type_error: 'Неверный формат даты',
-  }),
+  date: z.coerce.date(),
 });
 
 // Получение настроек из БД или дефолтные значения

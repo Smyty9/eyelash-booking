@@ -6,10 +6,7 @@ import { requireAdmin } from '@/lib/utils/auth';
 
 const appointmentSchema = z.object({
   serviceId: z.string().uuid('Неверный ID услуги'),
-  date: z.coerce.date({
-    required_error: 'Дата обязательна',
-    invalid_type_error: 'Неверный формат даты',
-  }),
+  date: z.coerce.date(),
   time: z.string().regex(/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/, 'Неверный формат времени (HH:MM)'),
   name: z.string().min(1, 'Имя обязательно'),
   phone: z.string().min(1, 'Телефон обязателен'),

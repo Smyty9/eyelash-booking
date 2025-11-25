@@ -4,17 +4,9 @@ import { z } from 'zod';
 import { requireAdmin } from '@/lib/utils/auth';
 
 const timeBlockSchema = z.object({
-  type: z.enum(['DAY_OFF', 'VACATION', 'BREAK'], {
-    errorMap: () => ({ message: 'Неверный тип блокировки' }),
-  }),
-  startDateTime: z.coerce.date({
-    required_error: 'Дата начала обязательна',
-    invalid_type_error: 'Неверный формат даты начала',
-  }),
-  endDateTime: z.coerce.date({
-    required_error: 'Дата окончания обязательна',
-    invalid_type_error: 'Неверный формат даты окончания',
-  }),
+  type: z.enum(['DAY_OFF', 'VACATION', 'BREAK']),
+  startDateTime: z.coerce.date(),
+  endDateTime: z.coerce.date(),
   description: z.string().optional(),
 }).refine((data) => data.endDateTime > data.startDateTime, {
   message: 'Дата окончания должна быть позже даты начала',

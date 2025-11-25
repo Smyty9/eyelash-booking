@@ -4,9 +4,7 @@ import { z } from 'zod';
 import { requireAdmin } from '@/lib/utils/auth';
 
 const statusSchema = z.object({
-  status: z.enum(['PENDING', 'CONFIRMED', 'CANCELED'], {
-    errorMap: () => ({ message: 'Неверный статус' }),
-  }),
+  status: z.enum(['PENDING', 'CONFIRMED', 'CANCELED']),
 });
 
 export async function PATCH(
