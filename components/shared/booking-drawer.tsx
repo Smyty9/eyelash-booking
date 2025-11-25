@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useMediaQuery } from '@/hooks/use-media-query';
-import { CheckCircle2, AlertCircle } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface BookingDrawerProps {
   open: boolean;
@@ -24,8 +24,6 @@ export function BookingDrawer({ open, onOpenChange, serviceId, serviceName }: Bo
   const [clientName, setClientName] = useState('');
   const [clientPhone, setClientPhone] = useState('+7 ');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
   const [slotsError, setSlotsError] = useState<string | null>(null);
@@ -89,8 +87,6 @@ export function BookingDrawer({ open, onOpenChange, serviceId, serviceName }: Bo
     }
     
     setIsLoading(true);
-    setError(null);
-    setSuccessMessage(null);
     
     try {
       const response = await fetch('/api/appointments', {
@@ -140,8 +136,9 @@ export function BookingDrawer({ open, onOpenChange, serviceId, serviceName }: Bo
         weekday: 'long',
       });
       
-      setSuccessMessage(
-        `Запись успешно создана!\n\nУслуга: ${data.service.name}\nДата: ${formattedDate}\nВремя: ${selectedTime}`
+      toast.success(
+        `Запись успешно создана!\n\nУслуга: ${data.service.name}\nДата: ${formattedDate}\nВремя: ${selectedTime}`,
+        { duration: 5000 }
       );
       
       // Обновляем список доступных слотов после успешной записи
@@ -174,14 +171,12 @@ export function BookingDrawer({ open, onOpenChange, serviceId, serviceName }: Bo
           setClientName('');
           setClientPhone('+7 ');
           setAvailableSlots([]);
-          setError(null);
-          setSuccessMessage(null);
           setSlotsError(null);
         }, 300);
       }, 2000);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Произошла ошибка при создании записи';
-      setError(errorMessage);
+      toast.error(errorMessage);
       console.error('Error creating appointment:', err);
     } finally {
       setIsLoading(false);
@@ -243,8 +238,6 @@ export function BookingDrawer({ open, onOpenChange, serviceId, serviceName }: Bo
         setClientName('');
         setClientPhone('+7 ');
         setAvailableSlots([]);
-        setError(null);
-        setSuccessMessage(null);
         setSlotsError(null);
       }, 300);
     }
@@ -349,44 +342,15 @@ export function BookingDrawer({ open, onOpenChange, serviceId, serviceName }: Bo
               />
             </div>
 
-            {successMessage && (
-              <div className="text-sm text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-950/30 border-2 border-green-300 dark:border-green-700 p-4 rounded-lg space-y-2 shadow-sm">
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-                  <div className="flex-1 space-y-1.5">
-                    {successMessage.split('\n').map((line, index) => (
-                      <div key={index} className={index === 0 ? 'font-semibold' : ''}>
-                        {line}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-            
-            {error && (
-              <div className="text-sm text-destructive bg-destructive/10 border-2 border-destructive/30 p-3 rounded-lg">
-                <div className="flex items-start gap-2">
-                  <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
-                  <span>{error}</span>
-                </div>
-              </div>
-            )}
-            
             <Button
               onClick={handleConfirm}
-              disabled={!clientName || clientPhone.length < 18 || isLoading || !!successMessage}
-              className={`w-full ${successMessage ? 'bg-green-600 hover:bg-green-600 cursor-not-allowed' : ''}`}
+              disabled={!clientName || clientPhone.length < 18 || isLoading}
+              className="w-full"
             >
               {isLoading ? (
                 <>
                   <span className="animate-spin mr-2">⏳</span>
                   Отправка...
-                </>
-              ) : successMessage ? (
-                <>
-                  <CheckCircle2 className="h-4 w-4 mr-2" />
-                  Запись создана!
                 </>
               ) : (
                 'Подтвердить запись'

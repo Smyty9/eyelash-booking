@@ -78,3 +78,69 @@
   }
 }
 
+/* Кастомные стили для react-big-calendar */
+.rbc-calendar {
+  font-family: inherit;
+}
+
+.rbc-header {
+  padding: 8px 4px;
+  font-weight: 500;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.rbc-today {
+  background-color: #f3f4f6;
+}
+
+.rbc-off-range-bg {
+  background-color: #f9fafb;
+}
+
+.rbc-event {
+  border-radius: 4px;
+  padding: 2px 4px;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.rbc-event:focus {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+}
+
+.rbc-toolbar {
+  margin-bottom: 1rem;
+}
+
+.rbc-toolbar button {
+  color: #374151;
+  border: 1px solid #d1d5db;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.375rem;
+  background-color: white;
+  cursor: pointer;
+}
+
+.rbc-toolbar button:hover {
+  background-color: #f9fafb;
+}
+
+.rbc-toolbar button.rbc-active {
+  background-color: #6366f1;
+  color: white;
+  border-color: #6366f1;
+}
+
+.rbc-time-slot {
+  border-top: 1px solid #e5e7eb;
+}
+
+.rbc-time-header-content {
+  border-left: 1px solid #e5e7eb;
+}
+
+.rbc-day-slot .rbc-time-slot {
+  border-top: 1px solid #f3f4f6;
+}
+

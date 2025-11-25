@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ServicesTable } from '@/components/admin/services-table';
+import { ServicesTableSkeleton } from '@/components/admin/services-table-skeleton';
 import { ServiceForm } from '@/components/admin/service-form';
 import { Plus } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface Service {
   id: string;
@@ -51,37 +53,30 @@ export default function ServicesPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Вы уверены, что хотите удалить эту услугу?')) {
-      return;
-    }
+    toast.promise(
+      async () => {
+        const response = await fetch(`/api/services/${id}`, {
+          method: 'DELETE',
+        });
 
-    try {
-      const response = await fetch(`/api/services/${id}`, {
-        method: 'DELETE',
-      });
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.error || 'Ошибка при удалении услуги');
+        }
 
-      if (!response.ok) {
-        throw new Error('Ошибка при удалении услуги');
+        await fetchServices();
+      },
+      {
+        loading: 'Удаление услуги...',
+        success: 'Услуга успешно удалена',
+        error: (err) => err instanceof Error ? err.message : 'Ошибка при удалении услуги',
       }
-
-      await fetchServices();
-    } catch (error) {
-      console.error('Error deleting service:', error);
-      alert('Ошибка при удалении услуги');
-    }
+    );
   };
 
   const handleFormSuccess = () => {
     fetchServices();
   };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="text-gray-500">Загрузка...</div>
-      </div>
-    );
-  }
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">
@@ -100,11 +95,15 @@ export default function ServicesPage() {
         </div>
       </div>
       <div className="mt-8">
-        <ServicesTable
-          services={services}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
+        {loading ? (
+          <ServicesTableSkeleton />
+        ) : (
+          <ServicesTable
+            services={services}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        )}
       </div>
       <ServiceForm
         open={formOpen}

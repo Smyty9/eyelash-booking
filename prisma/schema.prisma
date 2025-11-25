@@ -21,10 +21,18 @@ enum AppointmentStatus {
   CANCELED
 }
 
+enum TimeBlockType {
+  DAY_OFF
+  VACATION
+  BREAK
+}
+
 model User {
   id        String   @id @default(uuid())
   phone     String   @unique
   name      String?
+  email     String?
+  password  String?
   role      UserRole @default(CLIENT)
   createdAt DateTime @default(now())
   
@@ -49,13 +57,14 @@ model Service {
 }
 
 model Appointment {
-  id        String            @id @default(uuid())
-  date      DateTime
-  status    AppointmentStatus @default(PENDING)
-  userId    String
-  serviceId String
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @updatedAt
+  id         String            @id @default(uuid())
+  date       DateTime
+  status     AppointmentStatus @default(PENDING)
+  userId     String
+  serviceId  String
+  clientName String?
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
   
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
@@ -64,5 +73,29 @@ model Appointment {
   @@index([userId])
   @@index([serviceId])
   @@map("appointments")
+}
+
+model Settings {
+  id                    String   @id @default(uuid())
+  workStartHour         Int      @default(10)
+  workEndHour           Int      @default(18)
+  timeSlotIntervalMinutes Int    @default(30)
+  updatedAt             DateTime @default(now()) @updatedAt
+  
+  @@map("settings")
+}
+
+model TimeBlock {
+  id            String         @id @default(uuid())
+  type          TimeBlockType
+  startDateTime DateTime
+  endDateTime   DateTime
+  description   String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  
+  @@index([startDateTime, endDateTime])
+  @@index([type])
+  @@map("time_blocks")
 }
 

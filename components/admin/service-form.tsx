@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { toast } from 'sonner';
 
 interface Service {
   id: string;
@@ -38,7 +39,6 @@ export function ServiceForm({ open, onOpenChange, service, onSuccess }: ServiceF
     isActive: true,
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (service) {
@@ -58,13 +58,11 @@ export function ServiceForm({ open, onOpenChange, service, onSuccess }: ServiceF
         isActive: true,
       });
     }
-    setError(null);
   }, [service, open]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
 
     try {
       const payload = {
@@ -93,10 +91,11 @@ export function ServiceForm({ open, onOpenChange, service, onSuccess }: ServiceF
         throw new Error(data.error || 'Ошибка при сохранении');
       }
 
+      toast.success(service ? 'Услуга успешно обновлена' : 'Услуга успешно создана');
       onSuccess();
       onOpenChange(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Произошла ошибка');
+      toast.error(err instanceof Error ? err.message : 'Произошла ошибка');
     } finally {
       setLoading(false);
     }
@@ -185,11 +184,6 @@ export function ServiceForm({ open, onOpenChange, service, onSuccess }: ServiceF
                 Активна
               </Label>
             </div>
-            {error && (
-              <div className="text-sm text-red-500 bg-red-50 p-2 rounded">
-                {error}
-              </div>
-            )}
           </div>
           <DialogFooter>
             <Button
