@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: eyelash-booking-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: eyelash_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: eyelash_booking
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5432:5432"  # только локально, не наружу
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U eyelash_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: eyelash-booking-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://eyelash_user:${DB_PASSWORD}@postgres:5432/eyelash_booking
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      NEXTAUTH_URL: ${NEXTAUTH_URL}
+      NODE_ENV: production
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: sh -c "npx prisma migrate deploy && node server.js"
+
+volumes:
+  postgres_data:
+
