@@ -2,9 +2,11 @@
 
 import { useMemo, useState } from 'react';
 import { Calendar, dateFnsLocalizer, View, ViewProps } from 'react-big-calendar';
+import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import { CalendarEvent, getEventStyle } from '@/lib/utils/calendar';
 
 const locales = {
@@ -18,6 +20,9 @@ const localizer = dateFnsLocalizer({
   getDay,
   locales,
 });
+
+// Обертываем Calendar в HOC для drag and drop
+const DragAndDropCalendar = withDragAndDrop(Calendar);
 
 interface AppointmentsCalendarProps {
   events: CalendarEvent[];
@@ -79,7 +84,7 @@ export function AppointmentsCalendar({
 
   return (
     <div className="h-[600px] w-full">
-      <Calendar
+      <DragAndDropCalendar
         localizer={localizer}
         events={events}
         startAccessor="start"
