@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Calendar, dateFnsLocalizer, View } from 'react-big-calendar';
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
@@ -20,6 +20,13 @@ const localizer = dateFnsLocalizer({
   getDay,
   locales,
 });
+
+// Тип для аргумента onEventDrop из react-big-calendar
+interface EventDropArgs {
+  event: CalendarEvent;
+  start: Date | string;
+  end: Date | string;
+}
 
 // Обертываем Calendar в HOC для drag and drop с правильной типизацией
 const DragAndDropCalendar = withDragAndDrop<CalendarEvent, object>(Calendar);
@@ -44,10 +51,14 @@ export function AppointmentsCalendar({
   const [currentView, setCurrentView] = useState<View>(defaultView);
   const [currentDate, setCurrentDate] = useState<Date>(defaultDate);
 
-  const handleEventDrop = ({ event, start, end }: { event: CalendarEvent; start: Date; end: Date }) => {
-    if (onEventDrop && event.type === 'appointment') {
-      onEventDrop(event, start, end);
-    }
+  const handleEventDrop = (args: EventDropArgs) => {
+    if (!onEventDrop || args.event.type !== 'appointment') return;
+    
+    // Преобразуем start и end в Date, если они строки
+    const startDate = args.start instanceof Date ? args.start : new Date(args.start);
+    const endDate = args.end instanceof Date ? args.end : new Date(args.end);
+    
+    onEventDrop(args.event, startDate, endDate);
   };
 
   const handleRangeChange = (range: { start: Date; end: Date } | Date[] | undefined, view?: View) => {
@@ -85,8 +96,8 @@ export function AppointmentsCalendar({
       <DragAndDropCalendar
         localizer={localizer}
         events={events}
-        startAccessor={(event: CalendarEvent) => event.start}
-        endAccessor={(event: CalendarEvent) => event.end}
+        startAccessor="start"
+        endAccessor="end"
         style={{ height: '100%' }}
         date={currentDate}
         view={currentView}
