@@ -37,7 +37,7 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 # Копируем необходимые файлы
-COPY --from=builder /app/public ./public
+# В standalone режиме Next.js уже включает public в .next/standalone, поэтому отдельное копирование не нужно
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
